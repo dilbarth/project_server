@@ -2,19 +2,10 @@
 import 'package:project_server/project_server.dart';
 
 class User extends PsObject {
-  User(Map<String, dynamic> json)
-      : super(json) {
-    if (isDeferred) {
-      return;
-    }
+  User();
 
-    email = json["Email"] as String;
-    isHiddenInUI = json["IsHiddenInUI"] as bool;
-    isSiteAdmin = json["IsSiteAdmin"] as bool;
-    loginName = json["LoginName"] as String;
-    principalType = json["PrincipalType"] as int;
-    title = json["Title"] as String;
-    userId = UserId(json["UserId"]);
+  User.fromJson(Map<String, dynamic> json) {
+    initFromJson(json);
   }
 
   String email;
@@ -24,7 +15,20 @@ class User extends PsObject {
   String loginName;
   int principalType;
   String title;
-  UserId userId;
+  DeferredObject<UserId> userId;
+
+  @override
+  void initFromJson(Map<String, dynamic> json) {
+    super.initFromJson(json);
+
+    email = json["Email"] as String;
+    isHiddenInUI = json["IsHiddenInUI"] as bool;
+    isSiteAdmin = json["IsSiteAdmin"] as bool;
+    loginName = json["LoginName"] as String;
+    principalType = json["PrincipalType"] as int;
+    title = json["Title"] as String;
+    userId = DeferredObject<UserId>(UserId(), json["UserId"]);
+  }
 
   @override
   Map<String, dynamic> toJson() {
@@ -35,22 +39,11 @@ class User extends PsObject {
       'LoginName': loginName,
       'PrincipalType': principalType,
       'Title': title,
-      'UserId': userId.toJson(),
+      'UserId': userId.value.toJson(),
     };
 
     json.addAll(super.toJson());
 
     return json;
-  }
-
-  @override
-  Future loadDeferredProperties(Server server, bool recursive) async {
-    if (userId.isDeferred) {
-      var data = await server.fetchData(userId.uri);
-      userId = UserId(data["d"]);
-      if (recursive) {
-        userId.loadDeferredProperties(server, recursive);
-      }
-    }
   }
 }

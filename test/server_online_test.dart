@@ -38,10 +38,10 @@ void main() {
     expect(project is PublishedProject, isTrue);
 
     expect(project.owner.isDeferred, isTrue);
-    expect(project.owner.title, isNull);
-    await project.loadDeferredProperties(server, false);
-    expect(project.owner.isDeferred, isFalse);
-    expect(project.owner.title, isNotNull);
+    expect(project.owner.value.title, isNull);
+//    await project.loadDeferredProperties(server, false);
+//    expect(project.owner.isDeferred, isFalse);
+//    expect(project.owner.title, isNotNull);
 
 //    int i = 0;
 //    for (var project in projects) {

@@ -34,30 +34,32 @@ class MetaData {
 }
 
 abstract class PsObject {
-  PsObject(Map<String, dynamic> json) {
-    if (json == null || json.keys.length == 0) {
-      return;
-    }
-    
+
+  bool isDeferred;
+  Uri uri;
+  MetaData metaData;
+  String id;
+
+  void initFromJson(Map<String, dynamic> json) {
+    assert(json != null && json.keys.length > 0);
+
     if (json.containsKey("__deferred")) {
       isDeferred = true;
       var path = json["__deferred"]["uri"];
       uri = Uri.parse(path);
       return;
     }
+
+    isDeferred = false;
+
     var metaDataJson = json["__metadata"];
     if (metaDataJson != null) {
       metaData = MetaData(metaDataJson);
+      uri = metaData.uri;
     }
 
     id = json["Id"]?.toString();
   }
-
-  bool isDeferred = false;
-  Uri uri;
-
-  MetaData metaData;
-  String id;
 
   Map<String, dynamic> toJson() {
     var json = <String, dynamic> {
@@ -73,6 +75,55 @@ abstract class PsObject {
 
     return json;
   }
+}
 
-  Future loadDeferredProperties(Server server, bool recursive);
+class PsObjectInstance extends PsObject {
+  PsObjectInstance();
+
+  @override
+  void initFromJson(Map<String, dynamic> json) {
+    super.initFromJson(json);
+    print("PsObjectInstance: ${uri.toString()}");
+  }
+}
+
+class DeferredObject<T extends PsObject> {
+  DeferredObject(T value, Map<String, dynamic> json) {
+    assert(json != null && json.keys.length > 0);
+
+    _value = value;
+
+    if (json.containsKey("__deferred")) {
+      var path = json["__deferred"]["uri"];
+      _uri = Uri.parse(path);
+      return;
+    }
+
+    _value.initFromJson(json);
+
+    _isDeferred = _value.isDeferred;
+  }
+
+  bool _isDeferred = true;
+  Uri _uri;
+
+  bool get isDeferred => _isDeferred;
+  Uri get uri => _uri;
+
+  T _value;
+  T get value {
+    if (isDeferred) {
+      return null;
+    }
+    return _value;
+  }
+
+  Future fetchDataIfDeferred(Server server) async {
+    if (!isDeferred) {
+      return;
+    }
+    var data = await server.fetchData(uri);
+    _value.initFromJson(data["d"]);
+    _isDeferred = _value.isDeferred;
+  }
 }

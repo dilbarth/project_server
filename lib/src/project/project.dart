@@ -2,49 +2,79 @@
 import 'package:project_server/project_server.dart';
 
 class Project extends PsObject {
-  Project(Map<String, dynamic> json)
-      : super(json) {
-    if (isDeferred) {
-      return;
-    }
+  Project();
 
-    approvedEnd = DateTime.parse(json["ApprovedEnd"] as String);
-    approvedStart = DateTime.parse(json["ApprovedStart"] as String);
-
-    name = json["Name"] as String;
-
-    owner = User(json["Owner"]);
+  Project.fromJson(Map<String, dynamic> json) {
+    initFromJson(json);
   }
 
   factory Project.create(Map<String, dynamic> json) {
-    var project = Project(json);
+    var project = Project();
+    project.initFromJson(json);
     if (project.isDeferred) {
       return project;
     }
 
     if (project.metaData.type == "PS.PublishedProject") {
-      return PublishedProject(json);
+      return PublishedProject.fromJson(json);
     } else {
       assert(project.metaData.type == "PS.DraftProject");
-      return DraftProject(json);
+      return DraftProject.fromJson(json);
     }
   }
 
   DateTime approvedEnd;
   DateTime approvedStart;
-
+  PsObjectInstance assignments;
+  PsObjectInstance calendar;
+  PsObjectInstance checkedOutBy;
+  DateTime checkedOutDate;
+  String checkOutDescription;
+  String checkOutId;
+  DateTime createdDate;
+  PsObjectInstance customFields;
+  PsObjectInstance draft;
+  PsObjectInstance enterpriseProjectType;
+  PsObjectInstance includeCustomFields;
+  bool isCheckedOut;
+  DateTime lastPublishedDate;
+  DateTime lastSavedDate;
   String name;
-
-  User owner;
+  int optimizerDecision;
+  DeferredObject<User> owner;
+  PsObjectInstance phase;
+  int plannerDecision;
+  PsObjectInstance projectResources;
+  int projectType;
+  PsObjectInstance queueJobs;
+  PsObjectInstance stage;
+  PsObjectInstance taskLinks;
+  PsObjectInstance tasks;
+  String winprojVersion;
 
   @override
-  Future loadDeferredProperties(Server server, bool recursive) async {
-    if (owner.isDeferred) {
-      var data = await server.fetchData(owner.uri);
-      owner = User(data["d"]);
-      if (recursive) {
-        owner.loadDeferredProperties(server, recursive);
-      }
-    }
+  void initFromJson(Map<String, dynamic> json) {
+    super.initFromJson(json);
+
+    approvedEnd = DateTime.parse(json["ApprovedEnd"] as String);
+    approvedStart = DateTime.parse(json["ApprovedStart"] as String);
+
+    checkedOutDate = DateTime.parse(json["CheckedOutDate"] as String);
+    checkOutDescription = json["CheckOutDescription"] as String;
+    checkOutId = json["CheckOutId"] as String;
+    createdDate = DateTime.parse(json["CreatedDate"] as String);
+
+    isCheckedOut = json["IsCheckedOut"] as bool;
+    lastPublishedDate = DateTime.parse(json["LastPublishedDate"] as String);
+    lastSavedDate = DateTime.parse(json["LastSavedDate"] as String);
+    name = json["Name"] as String;
+    optimizerDecision = json["OptimizerDecision"] as int;
+    owner = DeferredObject<User>(User(), json["Owner"]);
+
+    plannerDecision = json["PlannerDecision"] as int;
+
+    projectType = json["ProjectType"] as int;
+
+    winprojVersion = json["WinprojVersion"] as String;
   }
 }

@@ -2,18 +2,22 @@
 import 'package:project_server/project_server.dart';
 
 class UserId extends PsObject {
-  UserId(Map<String, dynamic> json)
-      : super(json) {
-    if (isDeferred) {
-      return;
-    }
+  UserId();
 
-    nameId = json["NameId"] as String;
-    nameIdIssuer = json["NameIdIssuer"] as String;
+  UserId.fromJson(Map<String, dynamic> json) {
+    initFromJson(json);
   }
 
   String nameId;
   String nameIdIssuer;
+
+  @override
+  void initFromJson(Map<String, dynamic> json) {
+    super.initFromJson(json);
+
+    nameId = json["NameId"] as String;
+    nameIdIssuer = json["NameIdIssuer"] as String;
+  }
 
   @override
   Map<String, dynamic> toJson() {
@@ -25,9 +29,5 @@ class UserId extends PsObject {
     json.addAll(super.toJson());
 
     return json;
-  }
-
-  @override
-  Future loadDeferredProperties(Server server, bool recursive) async {
   }
 }

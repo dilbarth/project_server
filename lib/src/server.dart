@@ -18,9 +18,14 @@ class Server {
       path += "/";
     }
     _apiUrl = "${path}_api";
+
+    _username = username;
+    _password = password;
   }
 
   final Uri url;
+  String _username;
+  String _password;
   String _apiUrl;
 
   DateTime _contextInfoTimestamp;
@@ -30,11 +35,7 @@ class Server {
   Future<Map<String, dynamic>> fetchData(Uri uri) async {
     await _contextInfoProcessing();
 
-    var client = NTLMClient(
-      username: "m21053",
-      password: "User3*Story",
-    );
-
+    var client = _createClient();
     var response = await client.get(
         uri,
         headers: {
@@ -66,26 +67,6 @@ class Server {
 
   Future<List<Project>> fetchProjects() async {
     var cmd = Uri.parse("$_apiUrl/ProjectServer/Projects");
-//    await _contextInfoProcessing();
-//
-//    NTLMClient client = NTLMClient(
-//      username: "m21053",
-//      password: "User3*Story",
-//    );
-//
-//    var response = await client.get(
-//        cmd,
-//        headers: {
-//          "Accept": "application/json;odata=verbose",
-//          "ContentType": "application/json",
-//          "X-RequestDigest": _contextInfo.formDigestValue,
-//        }
-//    );
-//
-//    if (response.statusCode == 200) {
-//      print(response.body);
-//      var jsn = json.decode(response.body);
-//    }
 
     var data = await fetchData(cmd);
     if (data == null) {
@@ -109,10 +90,7 @@ class Server {
   Future<ContextInfo> fetchContextInfo() async {
     var cmd = Uri.parse("$_apiUrl/contextinfo");
 
-    NTLMClient client = NTLMClient(
-      username: "m21053",
-      password: "User3*Story",
-    );
+    var client = _createClient();
 
     var response = await client.post(
         cmd,
@@ -132,6 +110,14 @@ class Server {
     }
 
     return _contextInfo;
+  }
+
+  NTLMClient _createClient() {
+    var client = NTLMClient(
+      username: _username,
+      password: _password,
+    );
+    return client;
   }
 
   Future<bool> _contextInfoProcessing() async {

@@ -55,16 +55,6 @@ class Server {
     return null;
   }
 
-  Future<PsObject> fetchObject(Uri objectUri) async {
-
-    var data = await fetchData(objectUri);
-
-    if (data == null) {
-      return null;
-    }
-
-  }
-
   Future<List<Project>> fetchProjects() async {
     var cmd = Uri.parse("$_apiUrl/ProjectServer/Projects");
 

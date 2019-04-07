@@ -123,7 +123,9 @@ class DeferredObject<T extends PsObject> {
       return;
     }
     var data = await server.fetchData(uri);
-    _value.initFromJson(data["d"]);
-    _isDeferred = _value.isDeferred;
+    if (data != null) {
+      _value.initFromJson(data["d"]);
+      _isDeferred = _value.isDeferred;
+    }
   }
 }

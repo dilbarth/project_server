@@ -24,8 +24,11 @@ void main() {
     _checkProject(project);
     _checkDeferredProperties(project);
 
-    //await project.loadDeferredProperties(server, false);
     await project.owner.fetchDataIfDeferred(server);
+    //await project.assignments.fetchDataIfDeferred(server);
+    //await project.calendar.fetchDataIfDeferred(server);
+    //await project.checkedOutBy.fetchDataIfDeferred(server);
+    await project.tasks.fetchDataIfDeferred(server);
     _checkProject(project);
     _checkUndeferredProperties(project);
   });

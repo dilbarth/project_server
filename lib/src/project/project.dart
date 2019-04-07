@@ -25,9 +25,9 @@ class Project extends PsObject {
 
   DateTime approvedEnd;
   DateTime approvedStart;
-  PsObjectInstance assignments;
-  PsObjectInstance calendar;
-  PsObjectInstance checkedOutBy;
+  DeferredObject<PsObjectInstance> assignments;
+  DeferredObject<PsObjectInstance> calendar;
+  DeferredObject<PsObjectInstance> checkedOutBy;
   DateTime checkedOutDate;
   String checkOutDescription;
   String checkOutId;
@@ -49,7 +49,7 @@ class Project extends PsObject {
   PsObjectInstance queueJobs;
   PsObjectInstance stage;
   PsObjectInstance taskLinks;
-  PsObjectInstance tasks;
+  DeferredObject<TaskCollection> tasks;
   String winprojVersion;
 
   @override
@@ -58,7 +58,9 @@ class Project extends PsObject {
 
     approvedEnd = DateTime.parse(json["ApprovedEnd"] as String);
     approvedStart = DateTime.parse(json["ApprovedStart"] as String);
-
+    assignments = DeferredObject<PsObjectInstance>(PsObjectInstance(), json["Assignments"]);
+    calendar = DeferredObject<PsObjectInstance>(PsObjectInstance(), json["Calendar"]);
+    checkedOutBy = DeferredObject<PsObjectInstance>(PsObjectInstance(), json["CheckedOutBy"]);
     checkedOutDate = DateTime.parse(json["CheckedOutDate"] as String);
     checkOutDescription = json["CheckOutDescription"] as String;
     checkOutId = json["CheckOutId"] as String;
@@ -75,6 +77,7 @@ class Project extends PsObject {
 
     projectType = json["ProjectType"] as int;
 
+    tasks = DeferredObject<TaskCollection>(TaskCollection(), json["Tasks"]);
     winprojVersion = json["WinprojVersion"] as String;
   }
 }

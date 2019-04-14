@@ -11,6 +11,5 @@ class DraftProject extends Project {
   @override
   void initFromJson(Map<String, dynamic> json) {
     super.initFromJson(json);
-
   }
 }

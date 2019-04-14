@@ -27,7 +27,7 @@ class User extends PsObject {
     loginName = json["LoginName"] as String;
     principalType = json["PrincipalType"] as int;
     title = json["Title"] as String;
-    userId = DeferredObject<UserId>(UserId(), json["UserId"]);
+    userId = DeferredObject<UserId>(() => UserId(), json["UserId"]);
   }
 
   @override
@@ -39,7 +39,7 @@ class User extends PsObject {
       'LoginName': loginName,
       'PrincipalType': principalType,
       'Title': title,
-      'UserId': userId.value.toJson(),
+      'UserId': userId.toJson(),
     };
 
     json.addAll(super.toJson());

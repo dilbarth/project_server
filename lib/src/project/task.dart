@@ -4,6 +4,7 @@ import 'package:project_server/project_server.dart';
 class Task extends PsObject {
   Task();
 
+  @override
   Task.fromJson(Map<String, dynamic> json) {
     initFromJson(json);
   }
@@ -101,7 +102,6 @@ class Task extends PsObject {
   String notes;
   int outlineLevel;
   String outlinePosition;
-  String YYY;
   int overtimeCost;
   String overtimeWork;
   int overtimeWorkMilliseconds;
@@ -309,10 +309,10 @@ class Task extends PsObject {
     workVariance = json["WorkVariance"] as String;
     workVarianceMilliseconds = json["WorkVarianceMilliseconds"] as int;
     workVarianceTimeSpan = json["WorkVarianceTimeSpan"] as String;
-
-    if (duration != "0d" || work != "0d") {
-      print("Task/ $name: $duration, $work, ${uri.toString()}");
-    }
+//
+//    if (duration != "0d" || work != "0d") {
+//      print("Task/ $name: $duration, $work, ${uri.toString()}");
+//    }
   }
 
   @override

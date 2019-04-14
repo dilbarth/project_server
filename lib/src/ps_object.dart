@@ -1,6 +1,9 @@
 
 import 'package:project_server/project_server.dart';
 
+typedef PsObjectCreatorCallback = PsObject Function();
+typedef PsObjectFromJsonCallback = PsObject Function(Map<String, dynamic>);
+
 class MetaData {
   MetaData(Map<String, dynamic> json) {
     if (json != null) {
@@ -88,10 +91,11 @@ class PsObjectInstance extends PsObject {
 }
 
 class DeferredObject<T extends PsObject> {
-  DeferredObject(T value, Map<String, dynamic> json) {
+  DeferredObject(PsObjectCreatorCallback creator, Map<String, dynamic> json) {
     assert(json != null && json.keys.length > 0);
+    assert(creator != null);
 
-    _value = value;
+    _value = creator();
 
     if (json.containsKey("__deferred")) {
       var path = json["__deferred"]["uri"];
@@ -127,5 +131,16 @@ class DeferredObject<T extends PsObject> {
       _value.initFromJson(data["d"]);
       _isDeferred = _value.isDeferred;
     }
+  }
+
+  Map<String, dynamic> toJson() {
+    if (!_isDeferred) {
+      return value.toJson();
+    }
+
+    var json = <String, dynamic>{
+      '__deferred': { 'uri': _uri.toString() }
+    };
+    return json;
   }
 }

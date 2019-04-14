@@ -27,29 +27,28 @@ class Project extends PsObject {
   DateTime approvedStart;
   DeferredObject<PsObjectInstance> assignments;
   DeferredObject<PsObjectInstance> calendar;
-  DeferredObject<PsObjectInstance> checkedOutBy;
+  DeferredObject<User> checkedOutBy;
   DateTime checkedOutDate;
   String checkOutDescription;
   String checkOutId;
   DateTime createdDate;
-  PsObjectInstance customFields;
-  PsObjectInstance draft;
-  PsObjectInstance enterpriseProjectType;
-  PsObjectInstance includeCustomFields;
+  DeferredObject<PsObjectInstance> customFields;
+  DeferredObject<PsObjectInstance> enterpriseProjectType;
+  DeferredObject<PsObjectInstance> includeCustomFields;
   bool isCheckedOut;
   DateTime lastPublishedDate;
   DateTime lastSavedDate;
   String name;
   int optimizerDecision;
   DeferredObject<User> owner;
-  PsObjectInstance phase;
+  DeferredObject<PsObjectInstance> phase;
   int plannerDecision;
-  PsObjectInstance projectResources;
+  DeferredObject<PsObjectInstance> projectResources;
   int projectType;
-  PsObjectInstance queueJobs;
-  PsObjectInstance stage;
-  PsObjectInstance taskLinks;
-  DeferredObject<TaskCollection> tasks;
+  DeferredObject<PsObjectInstance> queueJobs;
+  DeferredObject<PsObjectInstance> stage;
+  DeferredObject<PsObjectInstance> taskLinks;
+  DeferredObject<PsObjectCollection<Task>> tasks;
   String winprojVersion;
 
   @override
@@ -58,26 +57,70 @@ class Project extends PsObject {
 
     approvedEnd = DateTime.parse(json["ApprovedEnd"] as String);
     approvedStart = DateTime.parse(json["ApprovedStart"] as String);
-    assignments = DeferredObject<PsObjectInstance>(PsObjectInstance(), json["Assignments"]);
-    calendar = DeferredObject<PsObjectInstance>(PsObjectInstance(), json["Calendar"]);
-    checkedOutBy = DeferredObject<PsObjectInstance>(PsObjectInstance(), json["CheckedOutBy"]);
+    assignments = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["Assignments"]);
+    calendar = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["Calendar"]);
+    checkedOutBy = DeferredObject<User>(() => User(), json["CheckedOutBy"]);
     checkedOutDate = DateTime.parse(json["CheckedOutDate"] as String);
     checkOutDescription = json["CheckOutDescription"] as String;
     checkOutId = json["CheckOutId"] as String;
     createdDate = DateTime.parse(json["CreatedDate"] as String);
-
+    customFields = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["CustomFields"]);
+    enterpriseProjectType = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["EnterpriseProjectType"]);
+    includeCustomFields = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["IncludeCustomFields"]);
     isCheckedOut = json["IsCheckedOut"] as bool;
     lastPublishedDate = DateTime.parse(json["LastPublishedDate"] as String);
     lastSavedDate = DateTime.parse(json["LastSavedDate"] as String);
     name = json["Name"] as String;
     optimizerDecision = json["OptimizerDecision"] as int;
-    owner = DeferredObject<User>(User(), json["Owner"]);
-
+    owner = DeferredObject<User>(() => User(), json["Owner"]);
+    phase = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["Phase"]);
     plannerDecision = json["PlannerDecision"] as int;
-
+    projectResources = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["ProjectResources"]);
     projectType = json["ProjectType"] as int;
-
-    tasks = DeferredObject<TaskCollection>(TaskCollection(), json["Tasks"]);
+    queueJobs = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["QueueJobs"]);
+    stage = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["Stage"]);
+    taskLinks = DeferredObject<PsObjectInstance>(() => PsObjectInstance(), json["TaskLinks"]);
+    tasks = DeferredObject<PsObjectCollection<Task>>(
+            () => PsObjectCollection<Task>((j) => Task.fromJson(j)),
+            json["Tasks"]
+    );
     winprojVersion = json["WinprojVersion"] as String;
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    var json = <String, dynamic> {
+      'ApprovedEnd': approvedEnd.toIso8601String(),
+      'ApprovedStart': approvedStart.toIso8601String(),
+      'Assignments': assignments.toJson(),
+      'Calendar': calendar.toJson(),
+      'CheckedOutBy': checkedOutBy.toJson(),
+      'CheckedOutDate': checkedOutDate.toIso8601String(),
+      'CheckOutDescription': checkOutDescription,
+      'CheckOutId': checkOutId,
+      'CreatedDate': createdDate.toIso8601String(),
+      'CustomFields': customFields.toJson(),
+      'EnterpriseProjectType': enterpriseProjectType.toJson(),
+      'IncludeCustomFields': includeCustomFields.toJson(),
+      'IsCheckedOut': isCheckedOut,
+      'LastPublishedDate': lastPublishedDate.toIso8601String(),
+      'LastSavedDate': lastSavedDate.toIso8601String(),
+      'Name': name,
+      'OptimizerDecision': optimizerDecision,
+      'Owner': owner.toJson(),
+      'Phase': phase.toJson(),
+      'PlannerDecision': plannerDecision,
+      'ProjectResources': projectResources.toJson(),
+      'ProjectType': projectType,
+      'QueueJobs': queueJobs.toJson(),
+      'Stage': stage.toJson(),
+      'TaskLinks': taskLinks.toJson(),
+      'Tasks': tasks.toJson(),
+      'WinprojVersion': winprojVersion,
+    };
+
+    json.addAll(super.toJson());
+
+    return json;
   }
 }
